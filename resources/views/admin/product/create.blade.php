@@ -30,7 +30,13 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col">
-                                <input type="text" name="category" class="form-control" placeholder="Category">
+                                <label for="category" class="form-label">Category</label>
+                                <select name="category" class="form-control" id="category">
+                                    <option value="">Select Category</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->name }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
                                 @error('category')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -40,6 +46,14 @@
                             <div class="col">
                                 <input type="text" name="price" class="form-control" placeholder="Price">
                                 @error('price')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <input type="file" name="image" class="form-control">
+                                @error('image')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>

@@ -9,11 +9,20 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h1 class="mb-0">List Product</h1>
-                        <a href="{{ route('admin/products/create') }}" class="btn btn-primary">Add Product</a>
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="ml-auto d-flex">
+                            <!-- Tombol Add Product -->
+                            <a href="{{ route('admin/products/create') }}" class="btn btn-primary mr-2">Add Product</a>
+
+                            <!-- Form untuk pencarian produk -->
+                            <form action="{{ route('admin/products') }}" method="GET" class="d-flex">
+                                <input type="text" name="search" class="form-control"
+                                    placeholder="Search product..." value="{{ request()->get('search') }}">
+                                <button class="btn btn-primary ml-2" type="submit">Search</button>
+                            </form>
+                        </div>
                     </div>
+
                     <hr />
                     @if (Session::has('success'))
                         <div class="alert alert-success" role="alert">
@@ -27,6 +36,7 @@
                                 <th>Title</th>
                                 <th>Category</th>
                                 <th>Price</th>
+                                <th>Image</th> <!-- Tambahkan kolom gambar -->
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -37,6 +47,14 @@
                                     <td class="align-middle">{{ $product->title }}</td>
                                     <td class="align-middle">{{ $product->category }}</td>
                                     <td class="align-middle">{{ $product->price }}</td>
+                                    <td>
+                                        @if ($product->image)
+                                            <img src="{{ asset('images/' . $product->image) }}"
+                                                alt="{{ $product->title }}" width="50">
+                                        @else
+                                            No Image
+                                        @endif
+                                    </td>
                                     <td class="align-middle">
                                         <div class="btn-group" role="group" aria-label="Basic example">
                                             <a href="{{ route('admin/products/edit', ['id' => $product->id]) }}"
@@ -56,6 +74,9 @@
                             @endforelse
                         </tbody>
                     </table>
+                    <div class="d-flex justify-content-center">
+                        {{ $products->appends(request()->query())->links() }}
+                    </div>
                 </div>
             </div>
         </div>

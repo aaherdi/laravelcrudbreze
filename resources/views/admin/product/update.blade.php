@@ -11,9 +11,12 @@
                 <div class="p-6 text-gray-900">
                     <h1 class="mb-0">Edit Product</h1>
                     <hr />
-                    <form action="{{ route('admin/products/update', $products->id) }}" method="POST">
+                    <form action="{{ route('admin/products/update', $products->id) }}" method="POST"
+                        enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
+
+                        <!-- Input untuk nama produk -->
                         <div class="row">
                             <div class="col mb-3">
                                 <label class="form-label">Product Name</label>
@@ -24,16 +27,27 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col mb-3">
-                                <label class="form-label">Category</label>
-                                <input type="text" name="category" class="form-control" placeholder="Category"
-                                    value="{{ $products->category }}">
+
+                        <!-- Dropdown untuk kategori -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="category" class="form-label">Category</label>
+                                <select name="category" class="form-control" id="category">
+                                    @foreach ($categories as $category)
+                                        <option value="">{{ $products->category }}</option>
+                                        <option value="{{ $category->name }}"
+                                            {{ $products->category == $category->name ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                                 @error('category')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
+
+                        <!-- Input untuk harga produk -->
                         <div class="row">
                             <div class="col mb-3">
                                 <label class="form-label">Price</label>
@@ -44,6 +58,26 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <!-- Tampilkan gambar saat ini jika ada -->
+                        @if ($products->image)
+                            <div class="mb-3">
+                                <img src="{{ asset('images/' . $products->image) }}" alt="{{ $products->title }}"
+                                    width="100">
+                            </div>
+                        @endif
+
+                        <!-- Input untuk gambar baru -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <input type="file" name="image" class="form-control">
+                                @error('image')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Tombol Update -->
                         <div class="row">
                             <div class="d-grid">
                                 <button class="btn btn-warning">Update</button>
