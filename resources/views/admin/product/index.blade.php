@@ -9,12 +9,18 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <div class="d-flex justify-content-between mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <!-- Notifikasi sukses -->
+                        @if (Session::has('success'))
+                            <div class="alert alert-success" role="alert">
+                                {{ Session::get('success') }}
+                            </div>
+                        @endif
                         <div class="ml-auto d-flex">
                             <!-- Tombol Add Product -->
                             <a href="{{ route('admin/products/create') }}" class="btn btn-primary mr-2">Add Product</a>
 
-                            <!-- Form untuk pencarian produk -->
+                            <!-- Form Pencarian Produk -->
                             <form action="{{ route('admin/products') }}" method="GET" class="d-flex">
                                 <input type="text" name="search" class="form-control"
                                     placeholder="Search product..." value="{{ request()->get('search') }}">
@@ -24,11 +30,7 @@
                     </div>
 
                     <hr />
-                    @if (Session::has('success'))
-                        <div class="alert alert-success" role="alert">
-                            {{ Session::get('success') }}
-                        </div>
-                    @endif
+
                     <table class="table table-hover">
                         <thead class="table-primary">
                             <tr>

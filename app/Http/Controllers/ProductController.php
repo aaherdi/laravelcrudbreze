@@ -8,7 +8,6 @@ use App\Models\Category;
 
 class ProductController extends Controller
 {
-
     public function index(Request $request)
     {
         // Ambil query pencarian dari request
@@ -18,14 +17,13 @@ class ProductController extends Controller
         $products = Product::when($search, function ($query, $search) {
             return $query->where('title', 'like', "%{$search}%")
                 ->orWhere('category', 'like', "%{$search}%");
-        })->orderBy('id', 'desc')->paginate(3); // Pagination 10 produk per halaman
+        })->orderBy('id', 'desc')->paginate(3); // Pagination 3 produk per halaman
 
         $total = Product::count();
 
         // Return view dengan hasil pencarian dan pagination
-        return view('admin.product.home', compact('products', 'total', 'search'));
+        return view('admin.product.index', compact('products', 'total', 'search')); // ubah ke index
     }
-
 
     public function create()
     {
@@ -36,8 +34,6 @@ class ProductController extends Controller
     public function save(Request $request)
     {
         // Validasi termasuk gambar
-        // $categories = Category::all();
-        // return view('admin.product.create', compact('categories'));
         $validation = $request->validate([
             'title' => 'required',
             'category' => 'required',
@@ -64,12 +60,48 @@ class ProductController extends Controller
         }
     }
 
-
     public function edit($id)
     {
-        $products = Product::findOrFail($id);
-        $categories = Category::all();
-        return view('admin.product.update', compact('products', 'categories'));
+        $product = Product::findOrFail($id);  // Ambil data produk berdasarkan ID
+        $categories = Category::all();        // Ambil semua kategori dari database
+        return view('admin.product.edit', compact('product', 'categories')); // ubah ke edit
+    }
+
+    public function update(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+
+        // Validasi termasuk gambar
+        $validation = $request->validate([
+            'title' => 'required',
+            'category' => 'required',
+            'price' => 'required|numeric',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        // Proses upload gambar baru
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('images'), $imageName);
+
+            // Hapus gambar lama jika ada
+            if ($product->image && file_exists(public_path('images/' . $product->image))) {
+                unlink(public_path('images/' . $product->image));
+            }
+
+            // Set gambar baru
+            $product->image = $imageName;
+        }
+
+        // Update data produk lainnya
+        $product->update([
+            'title' => $request->title,
+            'category' => $request->category,
+            'price' => $request->price,
+        ]);
+
+        session()->flash('success', 'Product updated successfully');
+        return redirect(route('admin/products'));
     }
 
     public function delete($id)
@@ -87,45 +119,6 @@ class ProductController extends Controller
         $product->delete();
 
         session()->flash('success', 'Product deleted successfully');
-        return redirect(route('admin/products'));
-    }
-
-
-    public function update(Request $request, $id)
-    {
-        $product = Product::findOrFail($id);
-
-        // Validasi termasuk gambar
-        $validation = $request->validate([
-            'title' => 'required',
-            'category' => 'required',
-            'price' => 'required|numeric',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validasi gambar
-        ]);
-
-        // Proses upload gambar baru
-        if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $imageName);
-
-            // Hapus gambar lama jika ada
-            if ($product->image) {
-                if (file_exists(public_path('images/' . $product->image))) {
-                    unlink(public_path('images/' . $product->image));
-                }
-            }
-
-            // Set gambar baru
-            $product->image = $imageName;
-        }
-
-        // Update data produk lainnya
-        $product->title = $request->title;
-        $product->category = $request->category;
-        $product->price = $request->price;
-        $product->save();
-
-        session()->flash('success', 'Product updated successfully');
         return redirect(route('admin/products'));
     }
 }

@@ -11,7 +11,7 @@
                 <div class="p-6 text-gray-900">
                     <h1 class="mb-0">Edit Product</h1>
                     <hr />
-                    <form action="{{ route('admin/products/update', $products->id) }}" method="POST"
+                    <form action="{{ route('admin/products/update', $product->id) }}" method="POST"
                         enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
@@ -21,7 +21,7 @@
                             <div class="col mb-3">
                                 <label class="form-label">Product Name</label>
                                 <input type="text" name="title" class="form-control" placeholder="Title"
-                                    value="{{ $products->title }}">
+                                    value="{{ $product->title }}">
                                 @error('title')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -34,9 +34,9 @@
                                 <label for="category" class="form-label">Category</label>
                                 <select name="category" class="form-control" id="category">
                                     @foreach ($categories as $category)
-                                        <option value="">{{ $products->category }}</option>
+                                        <option value="">{{ $product->category }}</option>
                                         <option value="{{ $category->name }}"
-                                            {{ $products->category == $category->name ? 'selected' : '' }}>
+                                            {{ $product->category == $category->name ? 'selected' : '' }}>
                                             {{ $category->name }}
                                         </option>
                                     @endforeach
@@ -52,7 +52,7 @@
                             <div class="col mb-3">
                                 <label class="form-label">Price</label>
                                 <input type="text" name="price" class="form-control" placeholder="Product Price"
-                                    value="{{ $products->price }}">
+                                    value="{{ $product->price }}">
                                 @error('price')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -60,9 +60,9 @@
                         </div>
 
                         <!-- Tampilkan gambar saat ini jika ada -->
-                        @if ($products->image)
+                        @if ($product->image)
                             <div class="mb-3">
-                                <img src="{{ asset('images/' . $products->image) }}" alt="{{ $products->title }}"
+                                <img src="{{ asset('images/' . $product->image) }}" alt="{{ $product->title }}"
                                     width="100">
                             </div>
                         @endif
